@@ -1,6 +1,7 @@
 from pomanager.services.file_generator import FileGenerator
 from glob import glob
 
+
 def main(): 
     print("Insert the folder to find the files")
     directory_name = input()
