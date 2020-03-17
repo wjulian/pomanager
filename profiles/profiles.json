@@ -1,0 +1,11 @@
+{
+    "profiles":{
+        "default":{
+            "settings": {
+                "path_to_extract":"",
+                "lang":"",
+                "path_to_save":""
+            }
+        }
+    }
+}

@@ -1,5 +1,0 @@
-setup.py
-pomanager.egg-info/PKG-INFO
-pomanager.egg-info/SOURCES.txt
-pomanager.egg-info/dependency_links.txt
-pomanager.egg-info/top_level.txt
