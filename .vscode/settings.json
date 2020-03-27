@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Python38\\python.exe",
+    "python.pythonPath": "C:\\Users\\wjuli\\.virtualenvs\\pomanager-BAAdWk-4\\Scripts\\python.exe",
     "python.autoComplete.extraPaths": ["D:\\src\\pomanager"],
     "python.envFile": "${workspaceFolder}/.env",
     "python.jediEnabled": false

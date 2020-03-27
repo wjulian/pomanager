@@ -1,10 +1,7 @@
-from pomanager.services.file_generator import FileGenerator
+from pomanager import FileGenerator, ProfilesManager, Profile
 from glob import glob
-from profiles.profiles import Profile
 from pyfiglet import Figlet
 import os, json
-
-PROFILES_PATH = 'profiles\profiles.json'
 
 def main(): 
     run_menu()
@@ -19,19 +16,33 @@ def main():
 
 
 def loadProfile(profile_name: str):
-    with open(os.path.join(os.getcwd(), 'profiles\profiles.json'), 'r') as profile_file:
-        result = dict(json.loads(profile_file.read()))
-        profile = result['profiles'].get(profile_name)
-        return Profile(profile["settings"])
+    pass
 
 def run_menu():
-    profiles_names = get_profiles_names()
     print_header()
     print_options()
- 
-    # count = 1
-    # for profile_name in profiles_names:
-    #     print(f'{count}. {profile_name}')
+    print('\nSelecciona una opción: ')
+    option = int(input())
+    
+    if option < 1 or option > 3 :
+        print('Opción inválida')
+    elif option == 1:
+        print(get_profiles_names())
+        print_options()
+    elif option == 2:
+        profile_manager = ProfilesManager()
+        profile = {}
+        print('insert profile name: ')
+        profile['name'] = input()
+        print('insert path to extract: ')
+        profile['path_to_extract'] = input()
+        print('insert path to save: ')
+        profile['path_to_save'] = input()
+        print('insert destination lang: ')
+        profile['lang'] = input()
+        profile_manager.create_profile(Profile(profile))
+    elif option == 3:
+        print('Pronto!')
 
 def print_header():
     title = Figlet(font='taxi____')
@@ -40,12 +51,19 @@ def print_header():
 def print_options():
     print('Bienvenido al manejador de archivos .po')
     print('\nComencemos...')
-    print('1. ')
+    print('1. Listar perfiles.')
+    print('2. Crear perfil.')
+    print('3. Generar traducciones')
+    
 def get_profiles_names():
-    with open(os.path.join(os.getcwd(), PROFILES_PATH), 'r') as profiles_file:
-        result = dict(json.loads(profiles_file.read()))
-        profiles_names = result['profiles'].keys()
-        return profiles_names
+    profiles_names = []
+    profiles_manager = ProfilesManager()
+    profiles = profiles_manager.get_profiles()
+    for profile in profiles:
+        profiles_names.append(profile['name'])
+    return profiles_names
+    
+
 
 
 if __name__ == "__main__":
