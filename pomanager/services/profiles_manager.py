@@ -13,8 +13,8 @@ class ProfilesManager:
         self.db = TinyDB(os.path.join(parent_path, 'db.json'))
 
     def create_profile(self, profile: Profile):
-        json_profile = json.dump(profile.serialize())
-        self.db.table(self.PROFILES_TBL_NAME).insert(json_profile)
+        json_profile = json.dumps(profile.serialize())
+        self.db.table(self.PROFILES_TBL_NAME).insert(json.loads(json_profile))
 
     def get_profiles(self):
         return self.db.table(self.PROFILES_TBL_NAME).all()        
