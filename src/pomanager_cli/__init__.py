@@ -1,0 +1,1 @@
+from pomanager_cli.interface import Interface

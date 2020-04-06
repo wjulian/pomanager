@@ -11,6 +11,9 @@ polib = "*"
 googletrans = "*"
 pyfiglet = "*"
 tinydb = "*"
+click = "*"
+pomanager = {editable = true,path = "."}
+tabulate = "*"
 
 [requires]
 python_version = "3.8"
