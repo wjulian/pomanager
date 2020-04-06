@@ -25,6 +25,21 @@ class Interface:
         click.echo('Valor asignado exitosamente!')
         click.echo(data)
 
+    def print_langs(self, langs: dict):
+        click.secho('\n Idiomas\n')
+        for key, value in langs.items():
+            click.echo(f'  {key}: {value}\n')
+
+    def print_settings_initialized(self):
+        click.echo('EL archivo pomgr.settings.json se ha creado exitosamente')
+
+    def print_current_file(self, settings: dict):
+        click.secho('\n Settings\n', fg='green', nl=True)
+        for key, value in settings.items():
+            click.echo(f'  {key}: {value}')
+        print('\n')
+
+
     # def print_profiles(self, profiles: dict):
     #     for item in profiles:
     #         profile = Settings(item)

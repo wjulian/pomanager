@@ -5,9 +5,11 @@ from pomanager_cli import Interface
 from googletrans import LANGUAGES
 from glob import glob
 from pyfiglet import Figlet
-import os, click
+import os, click, json
 
-_interface = Interface()
+__interface = Interface()
+__FILEPATH = os.path.join(os.getcwd(), 'pomgr.settings.json')
+__settings_helper = SettingsHelper()
 
 @click.group()
 def main():
@@ -15,22 +17,24 @@ def main():
 
 @main.command('version', help='Muestra la versión instalada de pomanager')
 def print_version():
-    _interface.print_version()
+    __interface.print_version()
 
 @main.command('init', help='Crea un archivo de configuración para generar las traducciónes más rápidamente')
 def init():
-    
-    if settings_exist(FILEPATH):
-        if not _interface.file_exist_prompt():
+    if settings_exist(__FILEPATH):
+        if not __interface.file_exist_prompt():
             exit()
         else:
-            __settings_helper.generate(FILEPATH, Settings().serialize())
-
+            __settings_helper.generate(__FILEPATH, Settings({}).serialize())
+            __interface.print_settings_initialized()
+    else:
+        __settings_helper.generate(__FILEPATH, Settings({}).serialize())
+        __interface.print_settings_initialized()
 
 @main.command('set', help='Asigna el valor a la propiedad dada, con este comando puedes asignar sólo una propiedad de tu pomgr.seetings.json')
 @click.option('--key', prompt='Nombre', help='Nombre de la propiedad que deseas asignar')
 @click.option('--value', prompt='Valor', help='Valor que deseas asignar')
-def setValue(key: str, value):
+def set_value(key: str, value):
     """Set the value to the given property name if exist and print the file data, if not then raise an error
 
     Arguments:
@@ -38,11 +42,20 @@ def setValue(key: str, value):
         value {[type]} -- the value to set 
     """    
     if not __settings_helper.settings_exist():
-        _interface.file_not_exist_echo()
+        __interface.file_not_exist_echo()
         exit()
     else:
-        __settings_helper.set_value(key, value, FILEPATH)
-        _interface.value_setted_echo(__settings_helper.read())
+        __settings_helper.set_value(key, value, __FILEPATH)
+        __interface.value_setted_echo(__settings_helper.read())
+
+@main.command('settings', help='Imprime el contenido del archivo pomgr.settings.json')
+def print_settings():
+    print(__FILEPATH)
+    settings = __settings_helper.read(__FILEPATH)
+    if settings:
+        __interface.print_current_file(settings)
+    else:
+        click.echo('El archivo no tiene valores', err=True)
 
 
 
@@ -73,11 +86,9 @@ def setValue(key: str, value):
 #         else:
 #             choice_language()
 
-
+@main.command('langs', help='Imprime todos los lenguajes disponibles para la traducción')
 def print_available_langs():
-    for key, value in LANGUAGES:
-        print(f'{key}: {value}')
-
+    __interface.print_langs(LANGUAGES)
 
 def settings_exist(filepath: str):
     current_dir = filepath
@@ -89,6 +100,5 @@ def settings_exist(filepath: str):
     
 
 if __name__ == "__main__":
-    FILEPATH = f'{os.getcwd()}/pomgr.settings.json'
     __settings_helper = SettingsHelper()
     main()

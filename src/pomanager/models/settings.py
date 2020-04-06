@@ -7,6 +7,7 @@ class Settings:
         self.lang = self.__get_safe_value(settings, 'lang')
         self.destination = self.__get_safe_value(settings, 'destination')
         self.author = self.__get_safe_value(settings, 'author')
+        self.author_email = self.__get_safe_value(settings, 'author_email')
         self.filename = self.__get_safe_value(settings, 'filename')
 
 
@@ -19,7 +20,10 @@ class Settings:
         return {
             'entries': self.entries,
             'destination': self.destination,
-            'lang': self.lang
+            'lang': self.lang,
+            'author': self.author,
+            'filename': self.filename,
+            'author_email': self.author_email
         }
 
     def __get_safe_value(self, settings:dict, key):
@@ -32,4 +36,7 @@ class Settings:
         Returns:
             [type] -- the value from the key or ''
         """        
-        return '' if not settings[key] else settings[key]
+        try:
+            return settings[key]
+        except KeyError:
+            return ''

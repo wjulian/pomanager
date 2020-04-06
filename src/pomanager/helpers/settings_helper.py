@@ -4,7 +4,6 @@ import json
 import os
 import click
 
-
 class SettingsHelper:
 
     def __init__(self):
@@ -19,7 +18,7 @@ class SettingsHelper:
         """        
         
         with open(filepath, 'w') as f:
-            json.dump(data, filepath)
+            json.dump(data, f, indent=4, sort_keys=True)
 
 
     def read(self, filename: str):
@@ -30,12 +29,12 @@ class SettingsHelper:
 
         Returns:
             [json] -- readed file content in json format or None if the file doesn't exist
-        """      
-        if os._exists(filename):  
+        """   
+        try:   
             with open(filename) as f:
-                return json.load(f)
-        else:
-            return None
+                    return json.loads(f.read())
+        except IOError:
+            print('do not exist', filename)
 
 
     def set_value(self, key: str, value, filename: str):
