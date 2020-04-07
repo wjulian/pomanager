@@ -1,6 +1,6 @@
-from pomanager.models import Settings
+from pomanager.models import Settings, Profile
 from pomanager.services import FileGenerator, PoCreator
-from pomanager.helpers import SettingsHelper
+from pomanager.helpers import SettingsHelper, ProfileHelper
 from pomanager_cli import Interface
 from googletrans import LANGUAGES
 from glob import glob
@@ -10,6 +10,7 @@ import os, click, json
 __interface = Interface()
 __FILEPATH = os.path.join(os.getcwd(), 'pomgr.settings.json')
 __settings_helper = SettingsHelper()
+__profile_helper = ProfileHelper()
 
 @click.group()
 def main():
@@ -17,29 +18,35 @@ def main():
 
 @main.command('version', help='Muestra la versión instalada de pomanager')
 def print_version():
-    __interface.print_version()
-
+    __interface.prinfilepath
 @main.command('init', help='Crea un archivo de configuración para generar las traducciónes más rápidamente')
 def init():
-    if settings_exist(__FILEPATH):
+    if settings_exist():
         if not __interface.file_exist_prompt():
             exit()
         else:
-            __settings_helper.generate(__FILEPATH, Settings({}).serialize())
-            __interface.print_settings_initialized()
+            profiles = [
+                Profile(entries='entries', lang='lang', destination='destination').serialize()
+            ]
+            data = {'profiles': profiles }
+            __settings_helper.generate(__FILEPATH, Settings(data).serialize())
+            __interface.creation_success('archivo pomgr.settings.json')
     else:
         __settings_helper.generate(__FILEPATH, Settings({}).serialize())
-        __interface.print_settings_initialized()
+        __interface.creation_success('archivo pomgr.settings.json')
+
+
 
 @main.command('set', help='Asigna el valor a la propiedad dada, con este comando puedes asignar sólo una propiedad de tu pomgr.seetings.json')
 @click.option('--key', prompt='Nombre', help='Nombre de la propiedad que deseas asignar')
 @click.option('--value', prompt='Valor', help='Valor que deseas asignar')
 def set_value(key: str, value):
-    """Set the value to the given property name if exist and print the file data, if not then raise an error
+    """Sets the value to the given property name if exist and print the file
+    data, if not then raise an error.
 
     Arguments:
         key {str} -- the name of the property to change
-        value {[type]} -- the value to set 
+        value {[type]} -- the value to set
     """    
     if not __settings_helper.settings_exist():
         __interface.file_not_exist_echo()
@@ -47,6 +54,8 @@ def set_value(key: str, value):
     else:
         __settings_helper.set_value(key, value, __FILEPATH)
         __interface.value_setted_echo(__settings_helper.read())
+
+
 
 @main.command('settings', help='Imprime el contenido del archivo pomgr.settings.json')
 def print_settings():
@@ -56,6 +65,26 @@ def print_settings():
         __interface.print_current_file(settings)
     else:
         click.echo('El archivo no tiene valores', err=True)
+
+
+
+@main.command('create-profile', help='Crea un perfil dentro del archivo pomgr.settings.json')
+@click.option('--name', help='El nombre del perfil a crear', required=False)
+def create_profile(name: str):
+    """If the file pomgr.settings.json exist create a new profile with optional
+    name and prints the profile at the end.
+
+    Arguments:
+        name {str} -- The name of profile (optional)
+    """ 
+    if not settings_exist():
+        __interface.file_not_exist_echo()
+        exit()
+    else:
+        profile = Profile(entries='', lang='', destination='', name=name)
+        __profile_helper.create_profile(profile, __FILEPATH)
+        __interface.creation_success(f'perfil {name}')
+        click.echo(profile.serialize())
 
 
 
@@ -90,9 +119,10 @@ def print_settings():
 def print_available_langs():
     __interface.print_langs(LANGUAGES)
 
-def settings_exist(filepath: str):
-    current_dir = filepath
-    if os.path.exists(current_dir):
+
+def settings_exist():
+    """Check if the file pomgr.settings.json exist."""        
+    if os.path.exists(__FILEPATH):
         return True
     else:
         return False

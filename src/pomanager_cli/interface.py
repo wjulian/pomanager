@@ -1,5 +1,5 @@
 from pyfiglet import Figlet
-from pomanager.models import Settings 
+from pomanager.models import Settings, Profile
 import click
 from tabulate import tabulate
 import pkg_resources
@@ -17,27 +17,39 @@ class Interface:
 
     def file_exist_prompt(self):
         return click.confirm('El archivo "pomgr.settings.json" ya existe, desea sobreescribirlo?', default=False)
-    
+
+
     def file_not_exist_echo(self):
-        click.echo('el archivo "pomgr.settings.json" no existe, corra el comando "pomgr init" para crearlo')
+        click.secho('\nel archivo "pomgr.settings.json" no existe, corra el comando "pomgr init" para crearlo\n',
+         bg='red', err=True)
+
 
     def value_setted_echo(self, data: dict):
         click.echo('Valor asignado exitosamente!')
         click.echo(data)
+
 
     def print_langs(self, langs: dict):
         click.secho('\n Idiomas\n')
         for key, value in langs.items():
             click.echo(f'  {key}: {value}\n')
 
-    def print_settings_initialized(self):
-        click.echo('EL archivo pomgr.settings.json se ha creado exitosamente')
+
+    def creation_success(self, that: str):
+        click.secho(f'\nEL {that} se ha creado exitosamente!\n', fg='green')
+
 
     def print_current_file(self, settings: dict):
-        click.secho('\n Settings\n', fg='green', nl=True)
+        click.secho('\n Settings\n', fg='blue', nl=True)
         for key, value in settings.items():
             click.echo(f'  {key}: {value}')
         print('\n')
+
+
+    def print_profiles(self, profiles: list()):
+        click.secho('\nPerfiles\n', fg='blue', nl=True)
+        for profile in profiles:
+            click.echo(profile.serialize())
 
 
     # def print_profiles(self, profiles: dict):

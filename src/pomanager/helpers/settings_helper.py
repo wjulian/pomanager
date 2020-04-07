@@ -21,23 +21,23 @@ class SettingsHelper:
             json.dump(data, f, indent=4, sort_keys=True)
 
 
-    def read(self, filename: str):
+    def read(self, filepath: str):
         """Reads a file.
 
         Arguments:
-            filename {str} -- name of file to read
+            filepath {str} -- name of file to read
 
         Returns:
             [json] -- readed file content in json format or None if the file doesn't exist
         """   
         try:   
-            with open(filename) as f:
-                    return json.loads(f.read())
+            with open(filepath) as f:
+                return json.loads(f.read())
         except IOError:
-            print('do not exist', filename)
+            print('do not exist', filepath)
 
 
-    def set_value(self, key: str, value, filename: str):
+    def set_value(self, key: str, value, filepath: str):
         """ Reads the data from the file, insert the value and the key if needed
         and replace the file
         
@@ -46,9 +46,9 @@ class SettingsHelper:
             value {any} -- value to save
             filename {str} -- filepath
         """        
-        data = read(filename)
+        data = self.read(filepath)
         data[key] = value
-        json.dump(data, filename, skipkeys=True)
+        json.dump(data, filepath, skipkeys=True, indent=4)
 
 
     def settings_exist(self):
@@ -58,8 +58,10 @@ class SettingsHelper:
             [type] -- a boolean with the result of check
         """        
         path = os.getcwd()
+        print(path)
         if os._exists(os.path.join(path, 'pomgr.settings.json')):
             return True
         else:
             return False
-        
+
+
