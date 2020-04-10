@@ -48,7 +48,8 @@ class SettingsHelper:
         """        
         data = self.read(filepath)
         data[key] = value
-        json.dump(data, filepath, skipkeys=True, indent=4)
+        with open(filepath, 'w') as f:
+            json.dump(data, f, skipkeys=True, indent=4)
 
 
     def settings_exist(self):

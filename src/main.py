@@ -26,7 +26,7 @@ def init():
             exit()
         else:
             profiles = [
-                Profile(entries='entries', lang='lang', destination='destination').serialize()
+                Profile(entries='', lang='', destination='').serialize()
             ]
             data = {'profiles': profiles }
             __settings_helper.generate(__FILEPATH, Settings(data).serialize())
@@ -38,8 +38,8 @@ def init():
 
 
 @main.command('set', help='Asigna el valor a la propiedad dada, con este comando puedes asignar sólo una propiedad de tu pomgr.seetings.json')
-@click.option('--key', prompt='Nombre', help='Nombre de la propiedad que deseas asignar')
-@click.option('--value', prompt='Valor', help='Valor que deseas asignar')
+@click.option('--key', '--k', prompt='Nombre', help='Nombre de la propiedad que deseas asignar')
+@click.option('--value', '--v', prompt='Valor', help='Valor que deseas asignar')
 def set_value(key: str, value):
     """Sets the value to the given property name if exist and print the file
     data, if not then raise an error.
@@ -68,8 +68,8 @@ def print_settings():
 
 
 
-@main.command('create-profile', help='Crea un perfil dentro del archivo pomgr.settings.json')
-@click.option('--name', help='El nombre del perfil a crear', required=False)
+@main.command('cp', help='Crea un perfil dentro del archivo pomgr.settings.json')
+@click.option('--name', '-n', help='El nombre del perfil a crear', required=False)
 def create_profile(name: str):
     """If the file pomgr.settings.json exist create a new profile with optional
     name and prints the profile at the end.

@@ -12,11 +12,9 @@ class ProfileHelper:
         """   
         data = None   
         with open(filepath, 'r') as f:  
-            data = json.loads(f.read())
-
-        profiles = data['profiles']
+            data = dict(json.loads(f.read()))
+        profiles = list(data.get('profiles', []))
         profiles.append(profile.serialize())
         data['profiles'] = profiles
-        TODO: 'Esta mierda no funciona'
         with open(filepath, 'w') as f:
-            json.dump(data, filepath, skipkeys=True, indent=4)
+            json.dump(data, f, skipkeys=True, indent=4)
