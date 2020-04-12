@@ -1,7 +1,6 @@
 from pyfiglet import Figlet
 from pomanager.models import Settings, Profile
 import click
-from tabulate import tabulate
 import pkg_resources
 
 class Interface:
@@ -40,22 +39,17 @@ class Interface:
 
 
     def print_current_file(self, settings: dict):
-        click.secho('\n Settings\n', fg='blue', nl=True)
+        click.secho('\n\tSettings\t\n', bg='white', fg='black', nl=True)
         for key, value in settings.items():
             click.echo(f'  {key}: {value}')
         print('\n')
 
 
-    def print_profiles(self, profiles: list()):
+    def print_profiles(self, profiles: list):
         click.secho('\nPerfiles\n', fg='blue', nl=True)
         for profile in profiles:
             click.echo(profile.serialize())
+            
 
-
-    # def print_profiles(self, profiles: dict):
-    #     for item in profiles:
-    #         profile = Settings(item)
-    #         data = [[profile.name,profile.path_to_extract,
-    #                  profile.path_to_save,profile.lang]]
-    #         headers = ['Nombre', 'Ruta de entrada', 'Ruta de salida', 'Idioma de destino']
-    #         click.echo(tabulate(data, headers=headers))
+    def profile_dont_exist(self, name: str):
+        click.secho(f'El perfil "{name}" no existe', fg='red', nl=True)

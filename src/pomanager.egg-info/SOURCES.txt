@@ -7,13 +7,15 @@ pomanager.egg-info/entry_points.txt
 pomanager.egg-info/requires.txt
 pomanager.egg-info/top_level.txt
 pomanager/helpers/__init__.py
+pomanager/helpers/po_helper.py
+pomanager/helpers/profile_helper.py
 pomanager/helpers/settings_helper.py
 pomanager/models/__init__.py
 pomanager/models/entry.py
+pomanager/models/profile.py
 pomanager/models/settings.py
 pomanager/services/__init__.py
-pomanager/services/file_generator.py
+pomanager/services/generator.py
 pomanager/services/msgid_extracter.py
-pomanager/services/po_creator.py
 pomanager_cli/__init__.py
 pomanager_cli/interface.py

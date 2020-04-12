@@ -6,7 +6,6 @@ class Settings:
         self.profiles = data.get('profiles', [])
         self.author = data.get('author', '')
         self.author_email = data.get('author_email', '')
-        self.filename = data.get('filename', '')
 
 
     def serialize(self):
@@ -18,6 +17,5 @@ class Settings:
         return {
             'profiles': self.profiles,
             'author': self.author,
-            'filename': self.filename,
             'author_email': self.author_email
         }

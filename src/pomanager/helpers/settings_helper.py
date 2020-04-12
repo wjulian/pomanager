@@ -18,7 +18,7 @@ class SettingsHelper:
         """        
         
         with open(filepath, 'w') as f:
-            json.dump(data, f, indent=4, sort_keys=True)
+            json.dump(data, f, indent=4)
 
 
     def read(self, filepath: str):

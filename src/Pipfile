@@ -10,10 +10,9 @@ autopep8 = "*"
 polib = "*"
 googletrans = "*"
 pyfiglet = "*"
-tinydb = "*"
 click = "*"
 pomanager = {editable = true,path = "."}
-tabulate = "*"
+pyinstaller = "*"
 
 [requires]
 python_version = "3.8"
