@@ -12,8 +12,9 @@ class Generator:
         if len(files) > 0:
             entries = list()
             for filename in files:
-                with open(filename, 'r') as f:
-                    entries.append(self.extract_entries(f, profile.pattern))
+                f = open(filename)
+                entries.append(self.extract_entries(f, profile.pattern))
+                f.close()
             
             if len(entries) > 0:
                 self.po_helper.create_file(entries, profile)
@@ -26,7 +27,7 @@ class Generator:
         if file.mode == 'r':
             lines = file.readlines()
             for line in lines:
-                msgids = re.findall(f'r{pattern}', line)
+                msgids = re.findall(pattern, line)
                 for msgid in msgids:
                     entries.append(Entry(msgid, (lines.index(line) + 1, file.name)))
 

@@ -64,7 +64,7 @@ def print_settings():
 
 
 @main.command('cp', help='Crea un perfil dentro del archivo pomgr.settings.json')
-@click.option('--name', '-n', help='El nombre del perfil a crear', required=False)
+@click.option('--name', '-n', help='El nombre del perfil a crear', required='')
 def create_profile(name: str):
     """If the file pomgr.settings.json exist create a new profile with optional
     name and prints the profile at the end.
@@ -81,25 +81,21 @@ def create_profile(name: str):
         
 
 @main.command('translate', help='Genera las traducciones')
-@click.option('--profile', '--p', required=False, default=False,
-    help='perfil para generar las traducciones (opcional), si ningun perfil es especificado se usa el perfil por defecto')
+@click.option('--profile-name', '--p', required=True, help='perfil para generar las traducciones')
 def translate(profile_name: str):
     if settings_exist():
-        if profile_name:
-            profile = Profile(__profile_helper.get_profile(profile_name, __FILEPATH))
-            if not profile:
-                __interface.profile_dont_exist(profile_name)
-            else:
-                if profile.entries != '':
-                    files = glob(f'{profile.entries}/**/*.cshtml')
-                    __generator.generate(files, profile)
-            
-            
+        profile_dict = __profile_helper.get_profile(profile_name, __FILEPATH)
+        if not profile_dict:
+            __interface.profile_dont_exist(profile_name)
+        else:
+            profile = Profile(profile_dict)
+            if profile.entries != '':
+                files = glob(f'{profile.entries}/**/*.cshtml')
+                __generator.generate(files, profile)
     
         
 def generate_settings():
-    pattern = '((?<=T\(\").+?(?=\",)|(?<=T\(\").+?(?=\"\)))'
-    default_profile = Profile(entries='', lang='', destination='', pattern=pattern)
+    default_profile = Profile({})
     settings = Settings({'profiles': [default_profile.serialize()]}).serialize()
     __settings_helper.generate(__FILEPATH, settings)
     __interface.creation_success('archivo pomgr.settings.json')

@@ -12,9 +12,8 @@ class PoHelper:
         self.__FILEPATH = __FILEPATH
 
     def create_file(self, entries: list, profile: Profile):
-        filename = f'{profile.name}.po'
+        filename = f'{profile.filename}.po'
         destination = profile.destination
-        filename = profile.filename
         SETTINGS = Settings(self.settings_helper.read(self.__FILEPATH))
         po = POFile()
         po.metadata = {

@@ -29,6 +29,14 @@ class ProfileHelper:
 
         profiles = list(data.get('profiles', []))
         if profiles:
-            return ((profile for profile in profiles if profile[name]), None)
+            _profile = {}
+            for profile in profiles:
+                result = dict(profile).get('name', '')
+                if result == name:
+                    _profile =  profile
+                    break
+            
+            return _profile
+        raise Exception('No existen perfiles')
 
 TODO: 'Resolver cómo agregar un valor al perfil'

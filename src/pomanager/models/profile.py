@@ -1,18 +1,12 @@
 class Profile:  
 
-    def __init__(
-        self, entries: str, 
-        lang: str, 
-        destination: str,
-        pattern: str,
-        filename = '',
-        name = ''):
-        self.name = name if name != '' else 'default'
-        self.entries = entries
-        self.lang = lang
-        self.destination = destination
-        self.pattern = pattern
-        self.filename = filename if filename != '' else 'translation'
+    def __init__(self, obj: dict):
+        self.name = obj.get('name', 'default')
+        self.entries = obj.get('entries', './')
+        self.lang = obj.get('lang', '')
+        self.destination = obj.get('destination', '')
+        self.pattern = obj.get('pattern', '((?<=T\(\").+?(?=\"\))|(?<=T\(\").+?(?=\",))')
+        self.filename = obj.get('filename', 'translation')
 
 
     def serialize(self):

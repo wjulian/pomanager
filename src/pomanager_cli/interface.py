@@ -41,7 +41,14 @@ class Interface:
     def print_current_file(self, settings: dict):
         click.secho('\n\tSettings\t\n', bg='white', fg='black', nl=True)
         for key, value in settings.items():
-            click.echo(f'  {key}: {value}')
+            if key == 'profiles':
+                click.echo(f'  {key}:\n')
+                for item in value:
+                    for k, v in item.items():
+                        click.echo(f'     {k}: {v}')
+                print('\n')
+            else:
+                click.echo(f'  {key}: {value}')
         print('\n')
 
 
