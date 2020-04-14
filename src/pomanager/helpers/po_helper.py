@@ -12,8 +12,14 @@ class PoHelper:
         self.__FILEPATH = __FILEPATH
 
     def create_file(self, entries: list, profile: Profile):
+        """Creates the pofile
+        
+        Arguments:
+            entries {list} -- entries to add to the pofile
+            profile {Profile} -- profile with properties to generate translations
+        """        
         filename = f'{profile.filename}.po'
-        destination = profile.destination
+        output = profile.output
         SETTINGS = Settings(self.settings_helper.read(self.__FILEPATH))
         po = POFile()
         po.metadata = {
@@ -27,21 +33,28 @@ class PoHelper:
             'Content-Transfer-Encoding': '8bit',
         }
 
-        self.__insert_entries(entries, po, profile)
-        if not os.path.exists(destination):
-            os.makedirs(destination)
+        self.__insert_entries(entries, po, profile.lang)
+        if not os.path.exists(output):
+            os.makedirs(output)
 
-        filepath = os.path.join(destination, filename)
+        filepath = os.path.join(output, filename)
         po.save(filepath)
     
 
-    def __insert_entries(self, list_of_entries: list, po: POFile, profile: Profile):
+    def __insert_entries(self, list_of_entries: list, po: POFile, lang: str):
+        """Insert the entries into profile with the selected language
+        
+        Arguments:
+            list_of_entries {list} -- entries to insert
+            po {POFile} -- pofile to add the entries
+            lang {str} -- lang to translate
+        """        
         translator = Translator()
         for entries in list_of_entries:
             for entry in entries:
                 new_entry = POEntry(
                     msgid= entry.msgid,
-                    msgstr= translator.translate(entry.msgid, dest=profile.lang).text,
+                    msgstr= translator.translate(entry.msgid, dest=lang).text,
                     occurrences=[entry.ocurrences]
                 )
                 po.append(new_entry)

@@ -60,3 +60,6 @@ class Interface:
 
     def profile_dont_exist(self, name: str):
         click.secho(f'El perfil "{name}" no existe', fg='red', nl=True)
+
+    def invalid_profile(self, name):
+        click.secho(f'El perfil "{name}" no es valido.')

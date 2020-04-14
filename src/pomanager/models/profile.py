@@ -2,9 +2,10 @@ class Profile:
 
     def __init__(self, obj: dict):
         self.name = obj.get('name', 'default')
-        self.entries = obj.get('entries', './')
+        self.entries = obj.get('entries', ['./'])
+        self.file_exts = obj.get('file_exts', [])
         self.lang = obj.get('lang', '')
-        self.destination = obj.get('destination', '')
+        self.output = obj.get('output', '')
         self.pattern = obj.get('pattern', '((?<=T\(\").+?(?=\"\))|(?<=T\(\").+?(?=\",))')
         self.filename = obj.get('filename', 'translation')
 
@@ -18,7 +19,8 @@ class Profile:
         return {
             'name': self.name,
             'entries': self.entries,
-            'destination': self.destination,
+            'file_exts': self.file_exts,
+            'output': self.output,
             'lang': self.lang,
             'pattern': self.pattern,
             'filename': self.filename

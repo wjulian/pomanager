@@ -24,6 +24,8 @@ def print_version():
 
 @main.command('init', help='Crea un archivo de configuración para generar las traducciónes más rápidamente')
 def init():
+    """ If settings doesn't exist create the pomgr.settings.json file with default values
+    else  ask if want rewrite the file, if yes then create the file else exit"""
     if settings_exist():
         if not __interface.file_exist_prompt():
             exit()
@@ -73,7 +75,7 @@ def create_profile(name: str):
         name {str} -- The name of profile (optional)
     """ 
     if settings_exist():
-        profile = Profile(entries='', lang='', destination='', name=name)
+        profile = Profile({'entries': '', 'lang': '', 'output':'', 'name': name})
         __profile_helper.create_profile(profile, __FILEPATH)
         __interface.creation_success(f'perfil {name}')
         click.echo(profile.serialize())
@@ -83,22 +85,48 @@ def create_profile(name: str):
 @main.command('translate', help='Genera las traducciones')
 @click.option('--profile-name', '--p', required=True, help='perfil para generar las traducciones')
 def translate(profile_name: str):
+    """if settings exist gets the profile (--p) search for the coincidences in files and generate the translations for those
+    
+    Arguments:
+        profile_name {str} -- the name of the profile with the properties to generate translations
+    """    
     if settings_exist():
         profile_dict = __profile_helper.get_profile(profile_name, __FILEPATH)
         if not profile_dict:
             __interface.profile_dont_exist(profile_name)
         else:
             profile = Profile(profile_dict)
-            if profile.entries != '':
-                files = glob(f'{profile.entries}/**/*.cshtml')
-                __generator.generate(files, profile)
-    
+            if is_valid_profile(profile):
+                files = []
+                for entry in profile.entries:
+                    for ext in profile.file_exts:
+                        files.extend(glob(f'{entry}/**/*.{ext}'))
+                if len(files) > 1:
+                    __generator.generate(files, profile)
+            else:
+                __interface.invalid_profile(profile.name)
+    else:
+        __interface.file_not_exist_echo()
+
         
 def generate_settings():
+    """ Calls settings helper to generate the file with default values """    
     default_profile = Profile({})
     settings = Settings({'profiles': [default_profile.serialize()]}).serialize()
     __settings_helper.generate(__FILEPATH, settings)
     __interface.creation_success('archivo pomgr.settings.json')
+    
+
+def is_valid_profile(profile: Profile) -> bool:
+    """Check if the profile has the correct properties to generate translations
+    
+    Arguments:
+        profile {Profile} -- the profile to evaluate
+    
+    Returns:
+        bool -- True if it's properties are not empty
+    """    
+    return profile.entries != [] and profile.file_exts != []
 
 # def load_profile(profile_name: str) -> Config:
 #     return __settings_helper.get_profile(profile_name)

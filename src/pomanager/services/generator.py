@@ -9,6 +9,12 @@ class Generator:
         self.po_helper = PoHelper(__FILEPATH)
 
     def generate(self, files: list, profile: Profile):
+        """Calls extract and create the pofile
+        
+        Arguments:
+            files {list} -- files for extract entries
+            profile {Profile} -- profile with properties to generate the translation
+        """        
         if len(files) > 0:
             entries = list()
             for filename in files:
