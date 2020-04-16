@@ -1,2 +1,2 @@
-pomanager
-pomanager_cli
+core
+interface

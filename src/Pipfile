@@ -12,7 +12,8 @@ googletrans = "*"
 pyfiglet = "*"
 click = "*"
 pomanager = {editable = true,path = "."}
-pyinstaller = "*"
+setuptools = "<45.0.0"
+pyinstaller = {file = "https://github.com/pyinstaller/pyinstaller/archive/develop.zip"}
 
 [requires]
 python_version = "3.8"

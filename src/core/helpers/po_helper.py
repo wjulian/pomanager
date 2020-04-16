@@ -1,8 +1,8 @@
 from polib import POEntry, POFile
 from googletrans import Translator
 from datetime import date
-from pomanager.models import Entry, Settings, Profile
-from pomanager.helpers import SettingsHelper
+from core.models import Entry, Settings, Profile
+from core.helpers import SettingsHelper
 import os
 
 class PoHelper:
