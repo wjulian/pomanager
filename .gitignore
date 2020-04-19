@@ -1,3 +1,4 @@
-build/
-dist/
 __pycache__
+build
+src/pomanager.egg
+setup_generator/dist

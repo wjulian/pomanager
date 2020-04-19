@@ -17,3 +17,6 @@ pyinstaller = {file = "https://github.com/pyinstaller/pyinstaller/archive/develo
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+build = "pyinstaller main.py --distpath ../setup_generator/dist --workpath ../build -n pomgr"
