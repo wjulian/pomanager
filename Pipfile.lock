@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d3c4d5f3c576445b973db6da5398c419cf6b9d4836d58305c6366f5df729456b"
+            "sha256": "a4669cf30f0592179b18dbd8bcf62448c830f65c4a34208c69a904a3b72cb96b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -81,6 +81,14 @@
         },
         "pyinstaller": {
             "file": "https://github.com/pyinstaller/pyinstaller/archive/develop.zip"
+        },
+        "pysimplegui": {
+            "hashes": [
+                "sha256:298319f06baeec6c45047335389751b8b6ffafbd9b756783f38c966c51f2db05",
+                "sha256:ea7a6b22a093aced89ee39d4de852b2150605249fe1afe8f1aab814e26de3329"
+            ],
+            "index": "pypi",
+            "version": "==4.18.2"
         },
         "requests": {
             "hashes": [

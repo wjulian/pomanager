@@ -1,0 +1,26 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+autopep8 = "*"
+
+[packages]
+polib = "*"
+googletrans = "*"
+pyfiglet = "*"
+click = "*"
+pomanager = {editable = true,path = "."}
+setuptools = "<45.0.0"
+pyinstaller = {file = "https://github.com/pyinstaller/pyinstaller/archive/develop.zip"}
+pysimplegui = "*"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+mkspec-build = "pyi-makespec pomanager/main.py --name pomgr"
+mkspec-cli-deploy = "pyi-makespec setup/cli/generate_installer.py --name setup --specpath ./setup/cli/ --uac-admin --windowed"
+build = "pyinstaller ./pomgr.spec --distpath ./bin/dist --workpath ./bin/build"
+cli-deploy = "pyinstaller ./setup/cli/setup.spec --distpath ./bin/setup/cli/dist --workpath ./bin/setup/cli/build"
