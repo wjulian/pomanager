@@ -49,48 +49,52 @@ if is_admin():
         if event1 in (None, 'cancel'):
             break
         
-        dest_path = values[0]  #TODO: add pomanager folder if isn't there
+        dest_path = values[0] if 'pomanager' in values[0] else os.path.join(values[0], 'pomanager')
         # add_env_var = None if len(values) > 1 else values[1]
 
         if event1 == 'install_btn' and not window2_active:
             if not os.path.exists(dest_path):
                 os.makedirs(dest_path)
-            if not sg.popup_yes_no(f'La carpeta: {dest_path} ya existe, desea sobreescribirla?'):
+            elif not sg.popup_yes_no(f'La carpeta: {dest_path} ya existe, desea sobreescribirla?'):
                 break
-            else:
-                src = os.path.join(os.getcwd(), 'bin/dist/pomgr') if __debug__ else 'bin'
-                src_files = os.listdir(src)
+
+            src = os.path.join(os.getcwd(), 'bin')
+
+            if not sg.popup_ok_cancel(src): 
+                break
+
+            src_files = os.listdir(src)
+            
+            window2_active = True
+            layout2 = [
+                [sg.Text(key='-LBL1-', text='Iniciando..')],
+                [sg.ProgressBar(len(src_files), orientation='h', size=(20, 20), key='-PROGRESSBAR-')],
+                [sg.Cancel('Cancelar')] 
+            ]
+
+            window2 = sg.Window('Instalando...', layout2)
+            progress_bar = window2['-PROGRESSBAR-']
+
+            #reading files in dist folder to install it
+            for file_name in src_files:
+                event2, values2 = window2.read(timeout=100)
+                window2['-LBL1-'].update(f'copiando... {file_name}')
+                full_file_name = os.path.join(src, file_name)
+                dest = os.path.join(dest_path, file_name)
+
+                #if is directory copy tree else copy single file
+                if os.path.isdir(full_file_name):
+                    shutil.copytree(full_file_name, dest, symlinks=True)
+                else:
+                    shutil.copy(full_file_name, dest)
+
+                if event2 in (None, 'Cancelar'):
+                    break
                 
-                window2_active = True
-                layout2 = [
-                    [sg.Text(key='-LBL1-', text='Iniciando..')],
-                    [sg.ProgressBar(len(src_files), orientation='h', size=(20, 20), key='-PROGRESSBAR-')],
-                    [sg.Cancel('Cancelar')] 
-                ]
+                #updatin progress bar
+                progress_bar.UpdateBar(src_files.index(file_name) + 1)
 
-                window2 = sg.Window('Instalando...', layout2)
-                progress_bar = window2['-PROGRESSBAR-']
-
-                #reading files in dist folder to install it
-                for file_name in src_files:
-                    event2, values2 = window2.read(timeout=100)
-                    window2['-LBL1-'].update(f'copiando... {file_name}')
-                    full_file_name = os.path.join(src, file_name)
-                    dest = os.path.join(dest_path, file_name)
-
-                    #if is directory copy tree else copy single file
-                    if os.path.isdir(full_file_name):
-                        shutil.copytree(full_file_name, dest, symlinks=True)
-                    else:
-                        shutil.copy(full_file_name, dest)
-
-                    if event2 in (None, 'Cancelar'):
-                        break
-                    
-                    #updatin progress bar
-                    progress_bar.UpdateBar(src_files.index(file_name) + 1)
-
-                window2.close()
+            window2.close()
         window1.close()
 else:
     # Re-run the program with admin rights

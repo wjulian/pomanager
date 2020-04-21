@@ -6,7 +6,9 @@ block_cipher = None
 a = Analysis(['generate_installer.py'],
              pathex=['./setup/cli/'],
              binaries=[],
-             datas=[],
+             datas=[
+                 ('../../bin/dist/pomgr', 'bin')
+             ],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -34,4 +36,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='setup')
+               name='pomgr')
