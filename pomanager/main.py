@@ -1,7 +1,5 @@
-from core.models import Settings, Profile
-from core.services import Generator
-from core.helpers import SettingsHelper, ProfileHelper
-from interface import Interface
+from pomanager.core import Settings, Profile, Generator, SettingsHelper, ProfileHelper
+from pomanager.interface import Interface
 from googletrans import LANGUAGES
 from glob import glob
 from pyfiglet import Figlet
@@ -72,7 +70,7 @@ def create_profile(name: str):
     name and prints the profile at the end.
 
     Arguments:
-        name {str} -- The name of profile (optional)
+        name {str} -- The name of profile
     """ 
     if settings_exist():
         profile = Profile({'entries': '', 'lang': '', 'output':'', 'name': name})
@@ -80,7 +78,12 @@ def create_profile(name: str):
         __interface.creation_success(f'perfil {name}')
         click.echo(profile.serialize())
 
-        
+def get_files(profile: Profile) -> str : 
+    files = []
+    for entry in profile.entries:
+        for ext in profile.file_exts:
+            files.extend(glob(f'{entry}/**/*.{ext}'))     
+    return files  
 
 @main.command('translate', help='Genera las traducciones')
 @click.option('--profile-name', '--p', required=True, help='perfil para generar las traducciones')
@@ -97,10 +100,8 @@ def translate(profile_name: str):
         else:
             profile = Profile(profile_dict)
             if is_valid_profile(profile):
-                files = []
-                for entry in profile.entries:
-                    for ext in profile.file_exts:
-                        files.extend(glob(f'{entry}/**/*.{ext}'))
+                files = get_files(profile)
+                
                 if len(files) > 1:
                     __generator.generate(files, profile)
             else:

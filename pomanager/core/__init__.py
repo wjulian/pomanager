@@ -1,3 +1,3 @@
-import core.services
-import core.models
-import core.helpers
+import pomanager.core.services
+import pomanager.core.models
+import pomanager.core.helpers

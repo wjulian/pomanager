@@ -22,13 +22,7 @@ def is_admin():
         return False
 
 
-if is_admin():
-    sg.theme('DarkBlue2')
-    #getting current program files folder of windows os
-    prgm_path = os.environ.get('PROGRAMFILES(X86)') if not os.environ.get('PROGRAMFILES(X86)') else os.environ.get("PROGRAMFILES")
-    prgm_path = os.path.join(prgm_path, 'pomanager')
-
-    #Building layout
+def create_main_win(prgm_path: str) -> sg.Window:
     layout = [  
         [sg.Text(key='-LBL1-', text='Instala pomanager!')],
         [sg.Text(key='-LBL_LOCATE-', text='Donde deseas instalarlo?')],
@@ -37,66 +31,129 @@ if is_admin():
         [sg.Button(key='install_btn', button_text='Instalar'), sg.Button(key='cancel', button_text='Cancel')] 
     ]
 
-    make_dpi_aware()
+    return sg.Window('Instalación pomanager', layout)
 
-    window1 = sg.Window('Instalación pomanager', layout)
-    window2_active = False
+
+def create_sucss_win() -> sg.Window:
+    success_layout = [
+        [sg.Text('Pomanager se ha instaldo correctamente')],
+        [sg.Button('Finalizar', key='-DONE-')]
+    ]
+    return sg.Window('Pomanager instalado', success_layout)
+
+
+def get_prgm_path() -> str:
+    prgm_path = os.environ.get('PROGRAMFILES(X86)') if not os.environ.get('PROGRAMFILES(X86)') else os.environ.get("PROGRAMFILES")
+    prgm_path = os.path.join(prgm_path, 'pomanager')
+    return prgm_path
+
+
+def get_dest_path(main_vals: list) -> str:
+    dest_path = main_vals[0] if 'pomanager' in main_vals[0] else os.path.join(main_vals[0], 'pomanager')
+    return dest_path
+
+
+def create_prgrss_win(src_files: list) -> sg.Window:
+    layout2 = [
+        [sg.Text(key='-LBL1-', text='Iniciando..')],
+        [sg.ProgressBar(len(src_files), orientation='h', size=(20, 20), key='-PROGRESSBAR-')],
+        [sg.Cancel('Cancelar')] 
+    ]
+
+    return sg.Window('Instalando...', layout2)
+
+
+def get_src():
+    src = os.path.join(os.getcwd(), 'bin' if not __debug__ else 'bin\dist\pomgr')
+    src_files = os.listdir(src)
+    return src_files, src
+
+
+def copy_files(src: str, src_files: str, dest_path: str, prgrss_win: sg.Window):
+    prgrss_bar = prgrss_win['-PROGRESSBAR-']
+
+    #reading files in dist folder to install it
+    for file_name in src_files:
+        pw_event, pw_values = prgrss_win.read(timeout=30)
+        prgrss_win['-LBL1-'].update(f'copiando... {file_name}')
+        
+        full_file_name = os.path.join(src, file_name)
+        dest = os.path.join(dest_path, file_name)
+        #if is directory copy tree else copy single file
+        if os.path.isdir(full_file_name):
+            shutil.copytree(full_file_name, dest, symlinks=True)
+        else:
+            shutil.copy(full_file_name, dest)
+
+        if pw_event in (None, 'Cancelar'):
+            break
+
+        prgrss_bar.UpdateBar(src_files.index(file_name) + 1)
+
+
+def install(dest_path: str, succs_win: sg.Window):
+    src_files, src = get_src()
+    is_prgrs_w_active = True
+
+    prgrss_win = create_prgrss_win(src_files)
+
+    try:
+        copy_files(src, src_files, dest_path, prgrss_win)
+    except PermissionError as error:
+        sg.popup_error('Ha ocurrido un error', error)
+    except shutil.Error as error:
+        sg.popup_error('Ha ocurrido un error', error)
+    else:
+        prgrss_win.close()
+        while True:
+            is_succs_w_active = True
+            sw_e, sw_vals = succs_win.read()
+            if sw_e in (None, '-DONE-'):
+                break
+    finally:
+        prgrss_win.close()
+
+def run():
+    make_dpi_aware()
+    sg.theme('DarkBlue2')
+    #getting current program files folder of windows os
+    prgm_path = get_prgm_path()
+
+    #creating windows
+    main_win = create_main_win(prgm_path)
+    succs_win = create_sucss_win()
+
+    is_prgrs_w_active = False
+    is_succs_w_active = False
 
     #Showing principal window
     while True:
-        event1, values = window1.read()
-
-        if event1 in (None, 'cancel'):
+        main_ev, main_vals = main_win.read()
+        if main_ev in (None, 'cancel'):
             break
         
-        dest_path = values[0] if 'pomanager' in values[0] else os.path.join(values[0], 'pomanager')
+        dest_path = get_dest_path(main_vals)
         # add_env_var = None if len(values) > 1 else values[1]
-
-        if event1 == 'install_btn' and not window2_active:
-            if not os.path.exists(dest_path):
-                os.makedirs(dest_path)
-            elif not sg.popup_yes_no(f'La carpeta: {dest_path} ya existe, desea sobreescribirla?'):
-                break
-
-            src = os.path.join(os.getcwd(), 'bin')
-
-            if not sg.popup_ok_cancel(src): 
-                break
-
-            src_files = os.listdir(src)
-            
-            window2_active = True
-            layout2 = [
-                [sg.Text(key='-LBL1-', text='Iniciando..')],
-                [sg.ProgressBar(len(src_files), orientation='h', size=(20, 20), key='-PROGRESSBAR-')],
-                [sg.Cancel('Cancelar')] 
-            ]
-
-            window2 = sg.Window('Instalando...', layout2)
-            progress_bar = window2['-PROGRESSBAR-']
-
-            #reading files in dist folder to install it
-            for file_name in src_files:
-                event2, values2 = window2.read(timeout=100)
-                window2['-LBL1-'].update(f'copiando... {file_name}')
-                full_file_name = os.path.join(src, file_name)
-                dest = os.path.join(dest_path, file_name)
-
-                #if is directory copy tree else copy single file
-                if os.path.isdir(full_file_name):
-                    shutil.copytree(full_file_name, dest, symlinks=True)
+        if main_ev == 'install_btn' and not is_prgrs_w_active:
+            if os.path.exists(dest_path):
+                if sg.popup_yes_no(f'La carpeta: {dest_path} ya existe, desea sobrescribirla?'):
+                    shutil.rmtree(dest_path, ignore_errors=True)
+                    os.makedirs(dest_path)
+                    install(dest_path, succs_win)
                 else:
-                    shutil.copy(full_file_name, dest)
-
-                if event2 in (None, 'Cancelar'):
-                    break
+                  break
+            else:
+                os.makedirs(dest_path)
+                install(dest_path, succs_win)
                 
-                #updatin progress bar
-                progress_bar.UpdateBar(src_files.index(file_name) + 1)
+            main_win.close()
 
-            window2.close()
-        window1.close()
+
+if not __debug__: 
+    if is_admin():
+        run()
+    else:
+        # Re-run the program with admin rights
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
 else:
-    # Re-run the program with admin rights
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-
+    run()
