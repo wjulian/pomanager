@@ -1,5 +1,5 @@
 from pyfiglet import Figlet
-from core.models import Settings, Profile
+from pomanager.core import Settings, Profile
 import click
 import pkg_resources
 

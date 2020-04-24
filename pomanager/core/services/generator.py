@@ -1,7 +1,7 @@
 import os, glob, re
 from typing import TextIO
-from core.helpers import PoHelper
-from core.models import Profile, Entry
+from pomanager.core.helpers import PoHelper
+from pomanager.core.models import Profile, Entry
 
 class Generator:
 

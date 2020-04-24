@@ -2,7 +2,6 @@ from pomanager.core import Settings, Profile, Generator, SettingsHelper, Profile
 from pomanager.interface import Interface
 from googletrans import LANGUAGES
 from glob import glob
-from pyfiglet import Figlet
 import os, click, json
 
 __interface = Interface()
@@ -61,7 +60,12 @@ def print_settings():
         else:
             click.echo('El archivo no tiene valores', err=True)
 
-
+    else:
+        if not __interface.file_exist_prompt():
+            exit()
+        else:
+            generate_settings()
+            
 
 @main.command('cp', help='Crea un perfil dentro del archivo pomgr.settings.json')
 @click.option('--name', '-n', help='El nombre del perfil a crear', required='')

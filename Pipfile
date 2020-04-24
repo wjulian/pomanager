@@ -12,7 +12,6 @@ polib = "*"
 googletrans = "*"
 pyfiglet = "*"
 click = "*"
-pomanager = {editable = true,path = "."}
 setuptools = "<45.0.0"
 pyinstaller = {file = "https://github.com/pyinstaller/pyinstaller/archive/develop.zip"}
 pysimplegui = "*"
