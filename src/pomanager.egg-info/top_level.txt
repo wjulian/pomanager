@@ -1,2 +1,0 @@
-pomanager
-pomanager_cli

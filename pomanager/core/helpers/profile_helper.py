@@ -1,5 +1,5 @@
 import json
-from pomanager.models import Profile
+from pomanager.core.models import Profile
 
 class ProfileHelper:
     

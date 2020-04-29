@@ -1,4 +1,4 @@
-from pomanager.models.settings import Settings
+from pomanager.core.models import Settings
 from pathlib import Path
 import json
 import os

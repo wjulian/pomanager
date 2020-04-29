@@ -1,10 +1,7 @@
-from pomanager.models import Settings, Profile
-from pomanager.services import Generator
-from pomanager.helpers import SettingsHelper, ProfileHelper
-from pomanager_cli import Interface
+from pomanager.core import Settings, Profile, Generator, SettingsHelper, ProfileHelper
+from pomanager.interface import Interface
 from googletrans import LANGUAGES
 from glob import glob
-from pyfiglet import Figlet
 import os, click, json
 
 __interface = Interface()
@@ -35,22 +32,22 @@ def init():
         generate_settings()
         
 
-@main.command('set', help='Asigna el valor a la propiedad dada, con este comando puedes asignar sólo una propiedad de tu pomgr.seetings.json')
-@click.option('--profile', '--p', help='Nombre del perfil (opcional)', default=False, required=False)
-@click.option('--key', '--k', prompt='Nombre', help='Nombre de la propiedad que deseas asignar')
-@click.option('--value', '--v', prompt='Valor', help='Valor que deseas asignar')
-def set_value(profile: str, key: str, value):
-    """Sets the value to the given property name if exist and print the file
-    data, if not then raise an error.
+# @main.command('set', help='Asigna el valor a la propiedad dada, con este comando puedes asignar sólo una propiedad de tu pomgr.seetings.json')
+# @click.option('--profile', '--p', help='Nombre del perfil (opcional)', default=False, required=False)
+# @click.option('--key', '--k', prompt='Nombre', help='Nombre de la propiedad que deseas asignar')
+# @click.option('--value', '--v', prompt='Valor', help='Valor que deseas asignar')
+# def set_value(profile: str, key: str, value):
+#     """Sets the value to the given property name if exist and print the file
+#     data, if not then raise an error.
 
-    Arguments:
-        key {str} -- the name of the property to change
-        value {[type]} -- the value to set
-    """    
-    if settings_exist():
-        if not profile:
-            __settings_helper.set_value(key, value, __FILEPATH)
-            __interface.value_setted_echo(__settings_helper.read(__FILEPATH))
+#     Arguments:
+#         key {str} -- the name of the property to change
+#         value {[type]} -- the value to set
+#     """    
+#     if settings_exist():
+#         if not profile:
+#             __settings_helper.set_value(key, value, __FILEPATH)
+#             __interface.value_setted_echo(__settings_helper.read(__FILEPATH))
 
 
 
@@ -63,7 +60,12 @@ def print_settings():
         else:
             click.echo('El archivo no tiene valores', err=True)
 
-
+    else:
+        if not __interface.file_exist_prompt():
+            exit()
+        else:
+            generate_settings()
+            
 
 @main.command('cp', help='Crea un perfil dentro del archivo pomgr.settings.json')
 @click.option('--name', '-n', help='El nombre del perfil a crear', required='')
@@ -72,7 +74,7 @@ def create_profile(name: str):
     name and prints the profile at the end.
 
     Arguments:
-        name {str} -- The name of profile (optional)
+        name {str} -- The name of profile
     """ 
     if settings_exist():
         profile = Profile({'entries': '', 'lang': '', 'output':'', 'name': name})
@@ -80,7 +82,12 @@ def create_profile(name: str):
         __interface.creation_success(f'perfil {name}')
         click.echo(profile.serialize())
 
-        
+def get_files(profile: Profile) -> str : 
+    files = []
+    for entry in profile.entries:
+        for ext in profile.file_exts:
+            files.extend(glob(f'{entry}/**/*.{ext}'))     
+    return files  
 
 @main.command('translate', help='Genera las traducciones')
 @click.option('--profile-name', '--p', required=True, help='perfil para generar las traducciones')
@@ -97,10 +104,8 @@ def translate(profile_name: str):
         else:
             profile = Profile(profile_dict)
             if is_valid_profile(profile):
-                files = []
-                for entry in profile.entries:
-                    for ext in profile.file_exts:
-                        files.extend(glob(f'{entry}/**/*.{ext}'))
+                files = get_files(profile)
+                
                 if len(files) > 1:
                     __generator.generate(files, profile)
             else:

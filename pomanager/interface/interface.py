@@ -1,5 +1,5 @@
 from pyfiglet import Figlet
-from pomanager.models import Settings, Profile
+from pomanager.core import Settings, Profile
 import click
 import pkg_resources
 
@@ -9,9 +9,9 @@ class Interface:
         """Prints header app"""
         
         title = Figlet(font='taxi____')
-        click.echo(title.renderText('\t POMANAGER \n'))
+        click.secho(title.renderText('\t POMANAGER \n'), fg='red')
         version = pkg_resources.require('pomanager')[0].version
-        click.echo(f'Gestor de archivos .po, version: {version}')
+        click.echo(f'Gestor de archivos .po, version: {version}.\n')
 
 
     def file_exist_prompt(self):
